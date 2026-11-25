@@ -39,4 +39,6 @@ flowchart LR
 
 ## What I learned
 
-The Argo CD Pods initially hit the first worker’s Pod limit. Scheduler events distinguished a capacity problem from an application fault. The GatewayClass later remained unaccepted because the controller had started before the Gateway API definitions were installed. Its logs identified the missing definitions. A controller restart picked them up, and I verified that the class was accepted before provisioning the Gateway.
+When I installed Argo CD, several Pods stayed Pending. I checked the Kubernetes events and saw `Too many pods`. The first worker was already at its Pod limit. Karpenter brought up a second worker, and I checked that all seven Argo CD Pods were running and Ready.
+
+Later, my GatewayClass stayed at `Unknown`. We checked the controller logs and found that it had started before the Gateway API definitions were installed. We restarted the controller, and the class changed to `Accepted=True`. After setting up the route, we opened the investment app through the HTTPS load balancer. Now I check what the scheduler or controller is reporting before I change the app.
