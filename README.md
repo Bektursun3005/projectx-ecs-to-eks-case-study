@@ -43,15 +43,30 @@ flowchart LR
 
 ![Argo CD showing the investment app as Synced and Healthy](evidence/argocd-synced-healthy.jpg)
 
-**Kubernetes** reported both Pods Ready on the same image tag that CI published to ECR and recorded in `values-dev.yaml`. The registry and image name are omitted below.
+**Kubernetes** reported both Pods Ready on the same image tag that CI published to ECR and recorded in `values-dev.yaml`. The command masks the private ECR registry host in the displayed output.
 
-```text
-POD                                   READY   IMAGE TAG
-investment-app-dev-55d489dfd6-8bm8z   true    022b4553ef1a9551bac30507314835c439d116f1
-investment-app-dev-55d489dfd6-j2jjd   true    022b4553ef1a9551bac30507314835c439d116f1
+```bash
+kubectl --context projectx-dev-eks -n investment-dev get pods \
+  -o 'custom-columns=POD:.metadata.name,READY:.status.containerStatuses[*].ready,IMAGE:.status.containerStatuses[*].image' |
+  sed -E 's|[0-9]+\.dkr\.ecr\.us-east-1\.amazonaws\.com/|[registry omitted]/|g'
 ```
 
-**HTTPS** served the updated application through the AWS load balancer. The page showed “Paper trading with simulated funds.”
+```text
+POD                                   READY   IMAGE
+investment-app-dev-55d489dfd6-8bm8z   true    [registry omitted]/investment-app:022b4553ef1a9551bac30507314835c439d116f1
+investment-app-dev-55d489dfd6-j2jjd   true    [registry omitted]/investment-app:022b4553ef1a9551bac30507314835c439d116f1
+```
+
+**HTTPS** served the updated application through the AWS load balancer. This check used normal TLS certificate verification and found the updated label in the response. The screenshot below shows the app page.
+
+```bash
+curl -fsS --max-time 10 https://investment-dev.bekdevops.click/ |
+  grep -oF 'Paper trading with simulated funds'
+```
+
+```text
+Paper trading with simulated funds
+```
 
 ![Investment app served over HTTPS and showing the updated label](evidence/investment-app-https.jpg)
 
