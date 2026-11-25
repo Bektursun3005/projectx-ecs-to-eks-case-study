@@ -16,8 +16,10 @@ The workflow completed successfully. The tag in ECR matched the tag in the bot c
 
 The source commit identifies the code used to build the image. The later bot commit records what Dev should run. Those two commits have different SHAs.
 
-## What I can explain in an interview
+## What I learned
 
-A workflow that runs `helm upgrade` on each build applies changes at deployment time. Argo CD also checks live state against Git between builds and can correct drift with self-healing. For this lab I used GitHub Actions for testing and publishing, Helm for templating, and Argo CD for deployment and reconciliation.
+I wanted to know whether the version that passed CI was the version actually running in Dev. After I pushed the change, I opened the successful Actions run and checked that the full commit SHA was on the image in ECR. Then I opened the bot commit and found the same tag in `values-dev.yaml`. Argo CD showed `Synced` and `Healthy`, and both Ready Pods reported that same tag. I opened the app and saw the new label.
+
+Following the tag made the handoff clear to me. GitHub Actions publishes the image and records its tag in Git. Argo CD reads that tag and updates the Deployment. With self-healing enabled, Argo CD can also restore the Git version if someone changes the live Deployment by hand between builds.
 
 [Back to the Project X overview](../README.md)
