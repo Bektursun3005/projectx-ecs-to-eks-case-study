@@ -5,6 +5,11 @@ Chicago, Illinois, USA · April 2025–Present
 
 Project X is a hands-on training project. I moved a sample Flask and PostgreSQL investment app from ECS with Fargate to a personal Dev EKS cluster and built a repeatable way to deliver updates.
 
+## Case studies
+
+- [CI/CD pipeline and Argo CD rollout](cases/ci-cd.md)
+- [ECS and EKS migration rehearsal](cases/ecs-eks-comparison.md)
+
 ## What I built
 
 - **Infrastructure.** I provisioned EKS and the Dev database network with Terraform. I reused my personal VPC, ran the lab workers in public subnets, and placed RDS PostgreSQL in private subnets.
