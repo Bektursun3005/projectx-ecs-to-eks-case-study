@@ -37,6 +37,24 @@ flowchart LR
 | Kubernetes | Both app Pods were Ready and used the same image tag. |
 | Browser | The app displayed the updated label through the HTTPS load balancer. |
 
+### Deployment evidence
+
+**Argo CD** reported the Dev application Synced and Healthy at deployment revision `c5af398`.
+
+![Argo CD showing the investment app as Synced and Healthy](evidence/argocd-synced-healthy.jpg)
+
+**Kubernetes** reported both Pods Ready on the same image tag that CI published to ECR and recorded in `values-dev.yaml`. The registry and image name are omitted below.
+
+```text
+POD                                   READY   IMAGE TAG
+investment-app-dev-55d489dfd6-8bm8z   true    022b4553ef1a9551bac30507314835c439d116f1
+investment-app-dev-55d489dfd6-j2jjd   true    022b4553ef1a9551bac30507314835c439d116f1
+```
+
+**HTTPS** served the updated application through the AWS load balancer. The page showed “Paper trading with simulated funds.”
+
+![Investment app served over HTTPS and showing the updated label](evidence/investment-app-https.jpg)
+
 ## What I learned
 
 When I installed Argo CD, several Pods stayed Pending. I checked the Kubernetes events and saw `Too many pods`. The first worker was already at its Pod limit. Karpenter brought up a second worker, and I checked that all seven Argo CD Pods were running and Ready.
